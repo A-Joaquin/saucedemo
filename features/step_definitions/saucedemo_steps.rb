@@ -81,6 +81,7 @@ Then("products should be sorted by price ascending") do
   expect(prices).to eq(prices.sort)
 end
 
+
 Then("products should be sorted by price descending") do
   prices = all(".inventory_item_price").map { |price| price.text.gsub('$', '').to_f }
   expect(prices).to eq(prices.sort.reverse)
