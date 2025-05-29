@@ -86,3 +86,56 @@ Then("products should be sorted by price descending") do
   prices = all(".inventory_item_price").map { |price| price.text.gsub('$', '').to_f }
   expect(prices).to eq(prices.sort.reverse)
 end
+
+
+# Checkout Steps
+When("I click the checkout button") do
+  click_button "Checkout"
+end
+
+When("I enter checkout information with first name {string}, last name {string} and postal code {string}") do |first_name, last_name, postal_code|
+  fill_in "First Name", with: first_name
+  fill_in "Last Name", with: last_name
+  fill_in "Postal Code", with: postal_code
+end
+
+When("I click the continue button") do
+  click_button "Continue"
+end
+
+When("I click the finish button") do
+  click_button "Finish"
+end
+
+When("I click the cancel button") do
+  click_button "Cancel"
+end
+
+Then("I should see the checkout complete page") do
+  expect(page).to have_content("Checkout: Complete!")
+end
+
+Then("I should see {string} message") do |message|
+  expect(page).to have_content(message)
+end
+
+Then("I should be back at the cart page") do
+  expect(page).to have_content("Your Cart")
+end
+
+Then("I should see the checkout summary page") do
+  expect(page).to have_content("Checkout: Overview")
+end
+
+Then("The item total should match the sum of item prices") do
+  # Obtener todos los precios de los items
+  item_prices = all(".inventory_item_price").map { |price| price.text.gsub('$', '').to_f }
+  total_sum = item_prices.sum
+  
+  # Obtener el subtotal mostrado
+  subtotal_text = find(".summary_subtotal_label").text
+  subtotal = subtotal_text.match(/\$([\d.]+)/)[1].to_f
+  
+  # Verificar que coincidan
+  expect(subtotal).to eq(total_sum)
+end
