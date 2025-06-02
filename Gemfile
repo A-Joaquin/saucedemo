@@ -6,4 +6,7 @@ gem "cucumber"
 gem "capybara"
 gem "selenium-webdriver"
 gem "rspec-expectations"
+# En tu Gemfile
+gem 'win32ole'
+gem 'fiddle'
 
