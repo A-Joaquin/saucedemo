@@ -21,6 +21,7 @@ Feature: Shopping Cart Functionality
     And the button should change to "Add to cart"
 
   Scenario: View cart details
+    Given I have added "Sauce Labs Backpack" to the cart
     When I click on the cart title "Sauce Labs Backpack"
     Then I should see the cart details page for "Sauce Labs Backpack"
     And I should see detailed cart information
