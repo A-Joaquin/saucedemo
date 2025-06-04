@@ -77,3 +77,16 @@ Before('@with_cart_items') do
   first('.inventory_item .btn_primary.btn_inventory').click
   expect(page).to have_selector('.shopping_cart_badge', text: '1', wait: 5)
 end
+
+After('@checkout and not @validation and not @cancellation') do |scenario|
+  # Ejecutar si el escenario pasó exitosamente hasta este punto
+  # y estamos en la página de checkout overview
+  if scenario.passed? && page.current_url.include?('checkout-step-two.html')
+    # Completar la compra
+    click_button 'Finish'
+    
+    # Verificar la confirmación del pedido
+    expect(page).to have_content('Thank you for your order!', wait: 5)
+    expect(page).to have_current_path(/checkout-complete\.html/, url: true)
+  end
+end

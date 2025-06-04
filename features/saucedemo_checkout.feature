@@ -18,8 +18,6 @@ Feature: Checkout Process with Specific Products
     And I continue to checkout overview
     Then I should see "Sauce Labs Backpack" in the checkout summary
     And I should see the subtotal "$29.99" for 1 item
-    When I complete the purchase
-    Then I should see the order confirmation "Thank you for your order!"
 
   @checkout @login_required
   Scenario: Successful checkout with last product
@@ -29,8 +27,6 @@ Feature: Checkout Process with Specific Products
     And I continue to checkout overview
     Then I should see "Test.allTheThings() T-Shirt (Red)" in the checkout summary
     And I should see the subtotal "$15.99" for 1 item
-    When I complete the purchase
-    Then I should see the order confirmation "Thank you for your order!"
 
   @checkout @login_required
   Scenario: Checkout with multiple specific products
@@ -45,8 +41,6 @@ Feature: Checkout Process with Specific Products
       | Sauce Labs Bike Light                  |
       | Test.allTheThings() T-Shirt (Red)      |
     And the calculated subtotal should match the sum of individual prices
-    When I complete the purchase
-    Then I should see the order confirmation "Thank you for your order!"
 
   @checkout @validation
   Scenario Outline: Checkout validation with specific product
