@@ -1,0 +1,33 @@
+# cucumber.yml - Perfiles de ejecución
+
+# Perfil por defecto
+default: --format pretty --format html --out reports/cucumber_report.html --format json --out reports/cucumber_report.json
+
+# Perfil para smoke tests
+smoke: --tags "@smoke" --format pretty --format html --out reports/smoke_report.html
+
+# Perfil para tests de regresión
+regression: --tags "not @wip and not @manual" --format progress --format html --out reports/regression_report.html
+
+# Perfil para desarrollo (más verbose)
+dev: --format pretty --tags "not @wip" --no-strict
+
+# Perfil para CI/CD
+ci: --format progress --format junit --out reports/junit --format json --out reports/cucumber_report.json --tags "not @manual and not @wip"
+
+# Perfil para tests específicos de features
+login: --tags "@login" --format pretty
+cart: --tags "@cart" --format pretty
+checkout: --tags "@checkout" --format pretty
+
+# Perfil para tests de performance
+performance: --tags "@performance" --format pretty --format html --out reports/performance_report.html
+
+# Perfil para tests en paralelo
+parallel: --format progress --format json --out reports/cucumber_report.json
+
+# Perfil para debugging
+debug: --format pretty --tags "@debug" --no-strict --expand
+
+# Perfil headless
+headless: HEADLESS=true --format progress --format html --out reports/headless_report.html

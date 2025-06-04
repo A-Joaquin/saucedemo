@@ -8,20 +8,44 @@ Feature: Shopping Cart Functionality
     When I enter username "standard_user"
     And I enter password "secret_sauce"
     And I click the login button
+    Then I should be redirected to the products page
 
-  Scenario: Add item to cart
-    When I click on the add to cart button for "Sauce Labs Backpack"
+  @cart @smoke
+  Scenario: Add first product to cart
+    When I add the first product "Sauce Labs Backpack" to the cart
     Then the cart badge should show "1"
-    And the button should change to "Remove"
+    And the button for "Sauce Labs Backpack" should change to "Remove"
+    And the first product should remain "Sauce Labs Backpack"
 
-  Scenario: Remove item from cart
-    Given I have added "Sauce Labs Backpack" to the cart
-    When I click the remove button
-    Then the cart badge should be empty
-    And the button should change to "Add to cart"
+  @cart
+  Scenario: Add last product to cart
+    When I add the last product "Test.allTheThings() T-Shirt (Red)" to the cart
+    Then the cart badge should show "1"
+    And the button for "Test.allTheThings() T-Shirt (Red)" should change to "Remove"
+    And the last product should remain "Test.allTheThings() T-Shirt (Red)"
 
-  Scenario: View cart details
+  @cart
+  Scenario: Add multiple specific products to cart
+    When I add the first product "Sauce Labs Backpack" to the cart
+    And I add the product "Sauce Labs Bike Light" to the cart
+    And I add the last product "Test.allTheThings() T-Shirt (Red)" to the cart
+    Then the cart badge should show "3"
+    And all selected products should have "Remove" buttons
+
+  @cart @cleanup_required
+  Scenario: Remove specific product from cart
     Given I have added "Sauce Labs Backpack" to the cart
-    When I click on the cart title "Sauce Labs Backpack"
-    Then I should see the cart details page for "Sauce Labs Backpack"
-    And I should see detailed cart information
+    And I have added "Sauce Labs Bike Light" to the cart
+    When I remove "Sauce Labs Backpack" from the cart
+    Then the cart badge should show "1"
+    And the button for "Sauce Labs Backpack" should change to "Add to cart"
+    And the button for "Sauce Labs Bike Light" should remain "Remove"
+
+  @cart @navigation
+  Scenario: View cart details for specific product
+    Given I have added "Sauce Labs Backpack" to the cart
+    When I click on the cart link
+    And I click on the product title "Sauce Labs Backpack" in cart
+    Then I should see the product details page for "Sauce Labs Backpack"
+    And I should see the product price "$29.99"
+    And I should see the product description contains "pack"

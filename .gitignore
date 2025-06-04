@@ -1,0 +1,25 @@
+# Reports y outputs de Cucumber
+reports/
+screenshots/
+*.html
+*.json
+junit/
+
+# Logs
+*.log
+
+# Archivos del OS
+.DS_Store
+Thumbs.db
+
+# Configuración del IDE
+.vscode/
+.idea/
+
+# Ruby gems cache
+.bundle/
+vendor/bundle/
+
+# Archivos temporales
+tmp/
+temp/

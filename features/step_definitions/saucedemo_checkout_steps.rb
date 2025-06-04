@@ -1,100 +1,102 @@
-  When('I add the first product to the cart') do
-    add_button = first('.inventory_item .btn_primary.btn_inventory', wait: 5)
-    expect(add_button).not_to be_nil, "No 'Add to cart' button found for the first available product. Ensure you are on the inventory page."
-    add_button.click
-    expect(page).to have_selector('.shopping_cart_badge', text: '1', wait: 5)
-  end
-  
-  When('I add the second product to the cart') do
-    add_button = first('.inventory_item .btn_primary.btn_inventory', wait: 5)
-    expect(add_button).not_to be_nil, "Could not find an available 'Add to cart' button for a second product. (Was the first product added and its button state updated?)"
-    add_button.click
-    expect(page).to have_selector('.shopping_cart_badge', text: '2', wait: 5)
-  end
-  
-  When('I go to the cart') do
-    find('.shopping_cart_link').click
-    expect(page).to have_selector('#checkout', wait: 5)
-  end
-  
-  When('I click the checkout button') do
-    find('#checkout', wait: 5).click
-  end
-  
-  When('I fill in my information with first name {string}, last name {string}, and postal code {string}') do |first, last, zip|
-    fill_in 'First Name', with: first
-    fill_in 'Last Name', with: last
-    fill_in 'Zip/Postal Code', with: zip
-  end
-  
-  When('I continue to the overview') do
-    click_button('Continue')
-  end
-  
-  When('I finish the purchase') do
-    find('#finish', wait: 5).click
-  end
-  
-  When('I cancel the purchase') do
-    click_button('Cancel')
-  end
-  
-  Then('I should see the confirmation message {string}') do |msg|
-    expect(page).to have_content(msg)
-  end
+# Improved checkout steps with specific product validation
 
-  When('I cancel the information entry') do
-    click_button('Cancel')
-  end
+When('I proceed to checkout') do
+  find('.shopping_cart_link', wait: 5).click
+  expect(page).to have_selector('.cart_contents_container', wait: 5)
+  find('#checkout', wait: 5).click
+  expect(page).to have_current_path(/checkout-step-one.html/, url: true)
+end
 
-  Then('I should be redirected to the cart page') do
-    expect(page).to have_current_path(/cart.html/, url: true)
-    # También puedes verificar la presencia de algún elemento único del carrito:
-    expect(page).to have_content('Your Cart')
-  end
+When('I fill checkout information with first name {string}, last name {string}, and postal code {string}') do |first_name, last_name, postal_code|
+  fill_in 'first-name', with: first_name
+  fill_in 'last-name', with: last_name
+  fill_in 'postal-code', with: postal_code
+end
 
-  Then('the total should be correct') do
-    # Espera explícitamente que haya 2 artículos en el carrito en la página de resumen.
-    # El Background añade 1, el escenario añade el 2do.
-    prices = all('.cart_item', count: 2, wait: 10).map do |item_element|
-      # Encuentra el div del precio dentro de la etiqueta del artículo y espera a que su texto contenga dígitos.
-      price_text_with_digits = item_element.find('.cart_item_label .inventory_item_price', text: /\d/).text
-      # Extrae la parte numérica del texto del precio.
-      price_text_with_digits[/[\\d\\.]+/].to_f
+When('I continue to checkout overview') do
+  find('#continue', wait: 5).click
+  expect(page).to have_current_path(/checkout-step-two.html/, url: true)
+end
+
+When('I attempt to continue to checkout overview') do
+  find('#continue', wait: 5).click
+  # No verificamos redirección aquí, eso lo hace el Then
+end
+
+Then('I should see {string} in the checkout summary') do |product_name|
+  within('.cart_list') do
+    expect(page).to have_selector('.inventory_item_name', text: product_name, wait: 5)
+  end
+end
+
+Then('I should see the subtotal {string} for {int} item(s)') do |expected_subtotal, item_count|
+  actual_items = all('.cart_item').count
+  expect(actual_items).to eq(item_count), 
+    "Expected #{item_count} items in summary, but found #{actual_items}"
+  
+  subtotal_text = find('.summary_subtotal_label', wait: 5).text
+  expect(subtotal_text).to include(expected_subtotal)
+end
+
+When('I complete the purchase') do
+  find('#finish', wait: 5).click
+  expect(page).to have_current_path(/checkout-complete.html/, url: true)
+end
+
+Then('I should see the order confirmation {string}') do |confirmation_message|
+  expect(page).to have_selector('.complete-header', text: confirmation_message, wait: 5)
+end
+
+Then('I should see all {int} products in the checkout summary:') do |expected_count, table|
+  actual_items = all('.cart_item').count
+  expect(actual_items).to eq(expected_count)
+  
+  table.raw.flatten.each do |product_name|
+    within('.cart_list') do
+      expect(page).to have_selector('.inventory_item_name', text: product_name, wait: 5)
     end
-    subtotal = find('.summary_subtotal_label').text[/[\\d\\.]+/].to_f
-    expect(prices.sum).to eq(subtotal)
   end
+end
 
-  When('I remove all items from the cart') do
-    # Itera sobre todos los botones "Remove" y haz clic en ellos
-    # Es importante usar `all` y luego iterar, porque el número de botones cambiará
-    all('.cart_item .btn_secondary.cart_button').each do |remove_button|
-      remove_button.click
-    end
-    # Verifica que el badge del carrito desaparezca o no exista
-    expect(page).not_to have_selector('.shopping_cart_badge', wait: 2)
+Then('the calculated subtotal should match the sum of individual prices') do
+  individual_prices = all('.inventory_item_price').map do |price_element|
+    price_text = price_element.text.gsub('$', '').to_f
+    price_text
   end
+  
+  expected_subtotal = individual_prices.sum
+  
+  subtotal_text = find('.summary_subtotal_label', wait: 5).text
+  actual_subtotal = subtotal_text.match(/\$(\d+\.\d+)/)[1].to_f
+  
+  expect(actual_subtotal).to eq(expected_subtotal), 
+    "Expected subtotal #{expected_subtotal}, but found #{actual_subtotal}"
+end
 
-  Then('I should still be on the cart page') do
-    expect(page).to have_current_path(/cart.html/, url: true)
-    expect(page).to have_content('Your Cart')
-  end
+Then('I should see the validation error {string}') do |error_message|
+  expect(page).to have_selector('[data-test="error"]', text: error_message, wait: 5)
+end
 
-  Then('I should be on the checkout overview page') do
-    expect(page).to have_current_path(/checkout-step-two.html/, url: true)
-    expect(page).to have_content('Checkout: Overview')
-  end
+Then('I should remain on the checkout information page') do
+  expect(page).to have_current_path(/checkout-step-one.html/, url: true)
+  expect(page).to have_content('Checkout: Your Information')
+end
 
-  Then('I should see the text {string}') do |text_content|
-    expect(page).to have_content(text_content)
-  end
+When('I cancel the checkout process') do
+  find('#cancel', wait: 5).click
+end
 
-  When('I navigate back to the previous page') do
-    page.go_back
-  end
+Then('the cart should still contain {int} item(s)') do |expected_count|
+  badge = find('.shopping_cart_badge', wait: 5)
+  actual_count = badge.text.to_i
+  expect(actual_count).to eq(expected_count)
+end
 
-  Then('I should be on the checkout information page') do
-    expect(page).to have_current_path(/checkout-step-one.html/, url: true)
-    expect(page).to have_content('Checkout: Your Information')
+Then('the cart should contain {string}') do |product_name|
+  find('.shopping_cart_link', wait: 5).click
+  within('.cart_contents_container') do
+    expect(page).to have_selector('.inventory_item_name', text: product_name, wait: 5)
   end
+  # Regresar a productos para el siguiente step
+  find('#continue-shopping', wait: 5).click if page.has_selector?('#continue-shopping')
+end
