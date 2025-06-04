@@ -10,6 +10,11 @@ When('I enter password {string}') do |password|
   fill_in 'password', with: password
 end
 
+When('I enter valid credentials') do
+  fill_in 'user-name', with: 'standard_user'
+  fill_in 'password', with: 'secret_sauce'
+end
+
 When('I click the login button') do
   click_button 'Login'
 end
