@@ -30,13 +30,10 @@ When('I open the sidebar menu') do
   
   Then(/^the sidebar menu should be closed \(or not present on login page\)$/) do
     if page.has_current_path?(/\/(index\.html)?$/, url: true) || page.current_url.end_with?("/")
-      # En la página de login, el botón de menú hamburguesa NO DEBE existir.
       expect(page).not_to have_selector('#react-burger-menu-btn', wait: 3)
-      # También asegúrate de que los links del sidebar NO estén presentes.
       expect(page).not_to have_selector('#inventory_sidebar_link', wait: 1)
       expect(page).not_to have_selector('#about_sidebar_link', wait: 1)
     else
-      # En otras páginas, el menú debe estar cerrado pero el botón debe estar disponible.
       expect(page).not_to have_selector('#inventory_sidebar_link', visible: true, wait: 3)
       expect(page).not_to have_selector('#about_sidebar_link', visible: true, wait: 1)
       expect(page).to have_selector('#react-burger-menu-btn', visible: true, wait: 5)
@@ -46,6 +43,14 @@ When('I open the sidebar menu') do
   
   Then('I should be redirected to the {string} page') do |expected_url|
     expect(page.current_url).to eq(expected_url)
+    
+    case expected_url
+    when /saucelabs\.com/
+      expect(page).to have_selector('h1', text: 'Build apps users love with AI-driven insights', wait: 10)
+      expect(page).to have_title(/Sauce Labs/, wait: 10)
+    when /inventory\.html/
+      expect(page).to have_content('Products', wait: 5)
+    end
   end
   
   When('I add the first product to the cart from the products page') do
