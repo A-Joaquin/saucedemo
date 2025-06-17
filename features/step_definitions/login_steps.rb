@@ -1,9 +1,10 @@
 require_relative '../pages/login_page'
+require_relative '../support/test_data'
 
 login_page = LoginPage.new
 
 Given('I am on the SauceDemo login page') do
-  login_page.visit_page
+  login_page.load
 end
 
 When('I enter username {string}') do |username|
@@ -15,7 +16,8 @@ When('I enter password {string}') do |password|
 end
 
 When('I enter valid credentials') do
-  login_page.fill_valid_credentials
+  login_page.fill_username(TestData::VALID_USERNAME)
+  login_page.fill_password(TestData::VALID_PASSWORD)
 end
 
 When('I click the login button') do
@@ -23,9 +25,10 @@ When('I click the login button') do
 end
 
 Then('I should be redirected to the products page') do
-  expect(login_page.on_products_page?).to be true
+  expect(page).to have_current_path(LoginPage::PRODUCTS_PATH, url: true, wait: 5)
+  expect(page).to have_css(LoginPage::PRODUCTS_TITLE, text: 'Products', wait: 5)
 end
 
 Then('I should see the error message {string}') do |msg|
-  expect(login_page.has_error_message?(msg)).to be true
+  expect(page).to have_css(LoginPage::ERROR_MESSAGE, text: msg, wait: 5)
 end

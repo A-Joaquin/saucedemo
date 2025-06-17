@@ -7,7 +7,7 @@ Given('I scroll to the footer') do
 end
 
 Given('I can see the social media icons') do
-  expect(social_page.has_social_icons?).to be true
+  expect(social_page.social_icons_present?).to be true
 end
 
 When('I click on the Facebook icon') do
@@ -20,9 +20,9 @@ Then('a new tab should open') do
 end
 
 Then('the Facebook URL should be {string}') do |url|
-  expect(social_page.facebook_url).to eq(url)
+  expect(social_page.current_url).to eq(url)
 end
 
 Then('the Facebook page title should contain {string}') do |title|
-  expect(social_page.facebook_title).to include(title)
+  expect(social_page.current_title).to include(title)
 end

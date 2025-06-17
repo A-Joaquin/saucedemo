@@ -5,7 +5,7 @@ require_relative '../pages/checkout_page'
 checkout_page = CheckoutPage.new
 
 When('I proceed to checkout') do
-  expect(checkout_page.proceed_to_checkout).to be true
+  checkout_page.start_checkout
 end
 
 When('I fill checkout information with first name {string}, last name {string}, and postal code {string}') do |first_name, last_name, postal_code|
@@ -13,7 +13,7 @@ When('I fill checkout information with first name {string}, last name {string}, 
 end
 
 When('I continue to checkout overview') do
-  expect(checkout_page.continue_to_overview).to be true
+  checkout_page.continue_to_overview
 end
 
 When('I attempt to continue to checkout overview') do
@@ -30,7 +30,7 @@ Then('I should see the subtotal {string} for {int} item(s)') do |expected_subtot
 end
 
 When('I complete the purchase') do
-  expect(checkout_page.complete_purchase).to be true
+  checkout_page.finish_checkout
 end
 
 Then('I should see the order confirmation {string}') do |confirmation_message|
@@ -40,7 +40,7 @@ end
 Then('I should see all {int} products in the checkout summary:') do |expected_count, table|
   expect(checkout_page.cart_item_count).to eq(expected_count)
   table.raw.flatten.each do |product_name|
-    expect(checkout_page.has_cart_item?(product_name)).to be true
+    expect(checkout_page.cart_item_names).to include(product_name)
   end
 end
 

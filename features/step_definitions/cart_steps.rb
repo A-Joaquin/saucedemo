@@ -3,7 +3,7 @@ require_relative '../pages/cart_page'
 cart_page = CartPage.new
 
 When('I click on the add to cart button for {string}') do |item_name|
-  cart_page.add_to_cart(item_name)
+  cart_page.add_product_to_cart(item_name)
 end
 
 When('I click the remove button') do
@@ -11,7 +11,7 @@ When('I click the remove button') do
 end
 
 When('I click on the cart title {string}') do |product_name|
-  cart_page.click_product_title(product_name)
+  cart_page.click_product_name(product_name)
 end
 
 Then('the button should change to {string}') do |button_text|
@@ -19,7 +19,7 @@ Then('the button should change to {string}') do |button_text|
 end
 
 Then('the cart badge should be empty') do
-  expect(cart_page.has_no_cart_badge?).to be true
+  expect(cart_page.cart_badge_empty?).to be true
 end
 
 Then('I should see detailed cart information') do
@@ -28,11 +28,11 @@ Then('I should see detailed cart information') do
 end
 
 Then('I should see the cart details page for {string}') do |product_name|
-  expect(cart_page.on_cart_details_page_for?(product_name)).to be true
+  expect(cart_page.on_cart_details_page?(product_name)).to be true
 end
 
 Then('the cart badge should show {string}') do |expected_count|
-  expect(cart_page.has_cart_badge?(expected_count)).to be true
+  expect(cart_page.cart_badge_has_count?(expected_count)).to be true
 end
 
 Given('I have added {string} to the cart') do |product_name|
@@ -65,7 +65,7 @@ When('I add the product {string} to the cart') do |product_name|
 end
 
 When('I remove {string} from the cart') do |product_name|
-  cart_page.remove_from_cart(product_name)
+  cart_page.remove_product_from_cart(product_name)
 end
 
 Then('the button for {string} should change to {string}') do |product_name, expected_button_text|
@@ -98,7 +98,7 @@ Then('all selected products should have {string} buttons') do |button_text|
 end
 
 When('I click on the cart link') do
-  cart_page.click_cart_link
+  cart_page.open_cart
 end
 
 When('I click on the product title {string} in cart') do |product_name|
@@ -108,13 +108,13 @@ When('I click on the product title {string} in cart') do |product_name|
 end
 
 Then('I should see the product details page for {string}') do |product_name|
-  expect(cart_page.on_product_details_page_for?(product_name)).to be true
+  expect(cart_page.on_product_details_page?(product_name)).to be true
 end
 
 Then('I should see the product price {string}') do |expected_price|
-  expect(cart_page.product_price).to eq(expected_price)
+  expect(cart_page.product_details_price).to eq(expected_price)
 end
 
 Then('I should see the product description contains {string}') do |description_text|
-  expect(cart_page.product_description.downcase).to include(description_text.downcase)
+  expect(cart_page.product_details_description.downcase).to include(description_text.downcase)
 end

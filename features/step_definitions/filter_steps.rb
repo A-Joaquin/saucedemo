@@ -8,17 +8,21 @@ When('I select {string} from product sort') do |option|
 end
 
 Then('products should be sorted alphabetically ascending') do
-  expect(products_page.product_names).to eq(products_page.product_names.sort)
+  names = products_page.product_names
+  expect(names).to eq(names.sort)
 end
 
 Then('products should be sorted alphabetically descending') do
-  expect(products_page.product_names).to eq(products_page.product_names.sort.reverse)
+  names = products_page.product_names
+  expect(names).to eq(names.sort.reverse)
 end
 
 Then('products should be sorted by price ascending') do
-  expect(products_page.product_prices).to eq(products_page.product_prices.sort)
+  prices = products_page.product_prices
+  expect(prices).to eq(prices.sort)
 end
 
 Then('products should be sorted by price descending') do
-  expect(products_page.product_prices).to eq(products_page.product_prices.sort.reverse)
+  prices = products_page.product_prices
+  expect(prices).to eq(prices.sort.reverse)
 end
