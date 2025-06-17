@@ -1,13 +1,17 @@
+require_relative '../pages/cart_page'
+
+cart_page = CartPage.new
+
 When('I click on the add to cart button for {string}') do |item_name|
-  find(:xpath, "//div[text()='#{item_name}']/ancestor::div[@class='inventory_item']//button[contains(text(), 'Add to cart')]").click
+  cart_page.add_product_to_cart(item_name)
 end
 
 When('I click the remove button') do
-  click_button('Remove')
+  cart_page.click_remove_button
 end
 
 When('I click on the cart title {string}') do |product_name|
-  find('.inventory_item_name', text: product_name).click
+  cart_page.click_product_name(product_name)
 end
 
 Then('the button should change to {string}') do |button_text|
@@ -15,7 +19,7 @@ Then('the button should change to {string}') do |button_text|
 end
 
 Then('the cart badge should be empty') do
-  expect(page).not_to have_css('.shopping_cart_badge', wait: 5)
+  expect(cart_page.cart_badge_empty?).to be true
 end
 
 Then('I should see detailed cart information') do
@@ -24,11 +28,11 @@ Then('I should see detailed cart information') do
 end
 
 Then('I should see the cart details page for {string}') do |product_name|
-  expect(page).to have_css('.inventory_details_name', text: product_name, wait: 5)
+  expect(cart_page.on_cart_details_page?(product_name)).to be true
 end
 
 Then('the cart badge should show {string}') do |expected_count|
-  expect(page).to have_css('.shopping_cart_badge', text: expected_count, wait: 5)
+  expect(cart_page.cart_badge_has_count?(expected_count)).to be true
 end
 
 Given('I have added {string} to the cart') do |product_name|
@@ -61,8 +65,7 @@ When('I add the product {string} to the cart') do |product_name|
 end
 
 When('I remove {string} from the cart') do |product_name|
-  product_element = find('.inventory_item', text: product_name, wait: 5)
-  product_element.find('button[data-test*="remove"]').click
+  cart_page.remove_product_from_cart(product_name)
 end
 
 Then('the button for {string} should change to {string}') do |product_name, expected_button_text|
@@ -95,8 +98,7 @@ Then('all selected products should have {string} buttons') do |button_text|
 end
 
 When('I click on the cart link') do
-  find('.shopping_cart_link', wait: 5).click
-  expect(page).to have_selector('.cart_contents_container', wait: 5)
+  cart_page.open_cart
 end
 
 When('I click on the product title {string} in cart') do |product_name|
@@ -106,16 +108,13 @@ When('I click on the product title {string} in cart') do |product_name|
 end
 
 Then('I should see the product details page for {string}') do |product_name|
-  expect(page).to have_current_path(/inventory-item.html/, url: true)
-  expect(page).to have_selector('.inventory_details_name', text: product_name, wait: 5)
+  expect(cart_page.on_product_details_page?(product_name)).to be true
 end
 
 Then('I should see the product price {string}') do |expected_price|
-  actual_price = find('.inventory_details_price', wait: 5).text
-  expect(actual_price).to eq(expected_price)
+  expect(cart_page.product_details_price).to eq(expected_price)
 end
 
 Then('I should see the product description contains {string}') do |description_text|
-  description = find('.inventory_details_desc', wait: 5).text.downcase
-  expect(description).to include(description_text.downcase)
+  expect(cart_page.product_details_description.downcase).to include(description_text.downcase)
 end

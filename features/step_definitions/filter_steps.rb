@@ -1,24 +1,28 @@
 # Filter Steps
+require_relative '../pages/products_page'
+
+products_page = ProductsPage.new
+
 When('I select {string} from product sort') do |option|
-  find('.product_sort_container').select(option)
+  products_page.select_sort_option(option)
 end
 
 Then('products should be sorted alphabetically ascending') do
-  product_names = all('.inventory_item_name').map(&:text)
-  expect(product_names).to eq(product_names.sort)
+  names = products_page.product_names
+  expect(names).to eq(names.sort)
 end
 
 Then('products should be sorted alphabetically descending') do
-  product_names = all('.inventory_item_name').map(&:text)
-  expect(product_names).to eq(product_names.sort.reverse)
+  names = products_page.product_names
+  expect(names).to eq(names.sort.reverse)
 end
 
 Then('products should be sorted by price ascending') do
-  prices = all('.inventory_item_price').map { |price| price.text.gsub('$', '').to_f }
+  prices = products_page.product_prices
   expect(prices).to eq(prices.sort)
 end
 
 Then('products should be sorted by price descending') do
-  prices = all('.inventory_item_price').map { |price| price.text.gsub('$', '').to_f }
+  prices = products_page.product_prices
   expect(prices).to eq(prices.sort.reverse)
 end
