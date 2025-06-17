@@ -1,27 +1,28 @@
+require_relative '../pages/social_page'
+
+social_page = SocialPage.new
+
 Given('I scroll to the footer') do
-  page.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+  social_page.scroll_to_footer
 end
 
 Given('I can see the social media icons') do
-  expect(page).to have_selector('.social')
-  expect(page).to have_selector('[data-test="social-facebook"]')
+  expect(social_page.has_social_icons?).to be true
 end
 
 When('I click on the Facebook icon') do
-  @current_window = page.current_window
-  click_link('Facebook')
+  social_page.click_facebook_icon
 end
 
 Then('a new tab should open') do
-  expect(page.windows.length).to be > 1
-  @new_window = (page.windows - [@current_window]).last
-  page.switch_to_window(@new_window)
+  expect(social_page.new_tab_opened?).to be true
+  social_page.switch_to_new_tab
 end
 
 Then('the Facebook URL should be {string}') do |url|
-  expect(page.current_url).to eq(url)
+  expect(social_page.facebook_url).to eq(url)
 end
 
 Then('the Facebook page title should contain {string}') do |title|
-  expect(page.title).to include(title)
+  expect(social_page.facebook_title).to include(title)
 end
