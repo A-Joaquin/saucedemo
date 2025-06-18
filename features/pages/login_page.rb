@@ -30,11 +30,11 @@ class LoginPage
 
   # Devuelve true si está en la página de productos
   def on_products_page?
-    page.has_current_path?(PRODUCTS_PATH, url: true, wait: 5) && page.has_css?(PRODUCTS_TITLE, text: 'Products', wait: 5)
+    page.has_current_path?(PRODUCTS_PATH, url: true, wait: 5) && page.has_css?(PRODUCTS_TITLE, text: 'Products', exact: true, count: 1, wait: 5)
   end
 
   # Devuelve true si aparece el mensaje de error
   def has_error_message?(msg)
     page.has_css?(ERROR_MESSAGE, text: msg, wait: 5)
   end
-end 
+end

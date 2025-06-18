@@ -23,8 +23,13 @@ Then('the cart badge should be empty') do
 end
 
 Then('I should see detailed cart information') do
-  expect(page).to have_css('.inventory_details_desc', wait: 5)
-  expect(page).to have_css('.inventory_details_price', wait: 5)
+  # Verifica que la descripción exista y tenga contenido
+  expect(page).to have_css('.inventory_details_desc', text: /.+/, wait: 5)
+  expect(page).to have_css('.inventory_details_desc:not(:empty)', wait: 5)
+
+  # Verifica que el precio exista y tenga el formato correcto ($XX.XX)
+  expect(page).to have_css('.inventory_details_price', text: /\$\d+\.\d{2}/, wait: 5)
+  expect(page).to have_css('.inventory_details_price:not(:empty)', wait: 5)
 end
 
 Then('I should see the cart details page for {string}') do |product_name|

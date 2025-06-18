@@ -30,7 +30,7 @@ end
 
 Then('I should be redirected to the products page') do
   expect(page).to have_current_path(LoginPage::PRODUCTS_PATH, url: true, wait: 5)
-  expect(page).to have_css(LoginPage::PRODUCTS_TITLE, text: 'Products', wait: 5)
+  expect(page).to have_css(LoginPage::PRODUCTS_TITLE, text: 'Products', exact: true, count: 1, wait: 5)
 end
 
 Then('I should see the error message {string}') do |msg|

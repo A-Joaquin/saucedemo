@@ -34,17 +34,23 @@ class SidebarPage
 
   # Devuelve true si el sidebar está cerrado
   def sidebar_closed?
-    page.has_no_selector?(INVENTORY_SIDEBAR_LINK, visible: true, wait: 3) &&
-      page.has_no_selector?(ABOUT_SIDEBAR_LINK, visible: true, wait: 1) &&
-      page.has_selector?(BURGER_MENU_BTN, visible: true, wait: 5)
+    SIDEBAR_LINKS.values.all? { |link_id| page.has_no_selector?("##{link_id}", visible: true, wait: 1) } &&
+      page.has_no_selector?(SIDEBAR_CROSS_BTN, visible: true, wait: 1) &&
+      page.has_selector?(BURGER_MENU_BTN, visible: true, wait: 5) &&
+      !find(BURGER_MENU_BTN, wait: 5).disabled?
   end
 
   # Devuelve true si el sidebar está cerrado o no está presente en login
   def sidebar_closed_on_login_page?
-    if page.has_current_path?(/\/(index\.html)?$/, url: true) || page.current_url.end_with?("/")
+    if page.has_current_path?(/\/(index\.html)?$/, url: true, wait: 5) || page.current_url.end_with?("/")
+      # Verifica que el botón de menú no esté presente
       page.has_no_selector?(BURGER_MENU_BTN, wait: 3) &&
-        page.has_no_selector?(INVENTORY_SIDEBAR_LINK, wait: 1) &&
-        page.has_no_selector?(ABOUT_SIDEBAR_LINK, wait: 1)
+        # Verifica que ningún enlace del sidebar esté presente
+        SIDEBAR_LINKS.values.all? { |link_id| page.has_no_selector?("##{link_id}", wait: 1) } &&
+        # Verifica que el botón de cierre no esté presente
+        page.has_no_selector?(SIDEBAR_CROSS_BTN, wait: 1) &&
+        # Verifica que estamos en la página de login
+        page.has_selector?('#login-button', wait: 5)
     else
       sidebar_closed?
     end
@@ -65,4 +71,4 @@ class SidebarPage
   def on_inventory_page?
     page.has_content?(PRODUCTS_TITLE, wait: 5)
   end
-end 
+end
