@@ -26,3 +26,9 @@ Then('products should be sorted by price descending') do
   prices = products_page.product_prices
   expect(prices).to eq(prices.sort.reverse)
 end
+
+Then('the products should be sorted in this order:') do |table|
+  expected_order = table.raw.flatten
+  actual_order = products_page.product_names
+  expect(actual_order).to eq(expected_order)
+end

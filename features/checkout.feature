@@ -5,16 +5,19 @@ Feature: Checkout Process with Specific Products
 
   Background: 
     Given I am on the SauceDemo login page
-    When I enter username "standard_user"
+    And I enter username "standard_user"
     And I enter password "secret_sauce"
-    And I click the login button
-    Then I should be redirected to the products page
+    And I am logged in
 
   @checkout @smoke @login_required
   Scenario: Successful checkout with first product
     When I add the first product "Sauce Labs Backpack" to the cart
     And I proceed to checkout
-    And I fill checkout information with first name "Juan", last name "Pérez", and postal code "12345"
+    And I fill the checkout information with:
+      | field       | value  |
+      | first_name  | Juan   |
+      | last_name   | Pérez  |
+      | postal_code | 12345  |
     And I continue to checkout overview
     Then I should see "Sauce Labs Backpack" in the checkout summary
     And I should see the subtotal "$29.99" for 1 item
@@ -23,7 +26,11 @@ Feature: Checkout Process with Specific Products
   Scenario: Successful checkout with last product
     When I add the last product "Test.allTheThings() T-Shirt (Red)" to the cart
     And I proceed to checkout
-    And I fill checkout information with first name "Maria", last name "García", and postal code "54321"
+    And I fill the checkout information with:
+      | field       | value  |
+      | first_name  | Maria  |
+      | last_name   | García |
+      | postal_code | 54321  |
     And I continue to checkout overview
     Then I should see "Test.allTheThings() T-Shirt (Red)" in the checkout summary
     And I should see the subtotal "$15.99" for 1 item
@@ -34,19 +41,31 @@ Feature: Checkout Process with Specific Products
     And I add the product "Sauce Labs Bike Light" to the cart
     And I add the last product "Test.allTheThings() T-Shirt (Red)" to the cart
     And I proceed to checkout
-    And I fill checkout information with first name "Carlos", last name "Ruiz", and postal code "67890"
+    And I fill the checkout information with:
+      | field       | value  |
+      | first_name  | Carlos |
+      | last_name   | Ruiz   |
+      | postal_code | 67890  |
     And I continue to checkout overview
-    Then I should see all 3 products in the checkout summary:
-      | Sauce Labs Backpack                    |
-      | Sauce Labs Bike Light                  |
-      | Test.allTheThings() T-Shirt (Red)      |
-    And the calculated subtotal should match the sum of individual prices
+    Then the checkout summary should show the correct calculations:
+      | item                                  | price  | quantity |
+      | Sauce Labs Backpack                   | $29.99 | 1        |
+      | Sauce Labs Bike Light                 | $9.99  | 1        |
+      | Test.allTheThings() T-Shirt (Red)     | $15.99 | 1        |
+      And the subtotal should be "$55.97"
+      And the tax rate should be "8%"
+      And the tax amount should be "$4.48"
+      And the total amount should be "$60.45"
 
   @checkout @validation
   Scenario Outline: Checkout validation with specific product
     Given I have added "Sauce Labs Backpack" to the cart
     When I proceed to checkout
-    And I fill checkout information with first name "<first_name>", last name "<last_name>", and postal code "<postal_code>"
+    And I fill the checkout information with:
+      | field       | value         |
+      | first_name  | <first_name>  |
+      | last_name   | <last_name>   |
+      | postal_code | <postal_code> |
     And I attempt to continue to checkout overview
     Then I should see the validation error "<error_message>"
     And I should remain on the checkout information page
@@ -62,7 +81,11 @@ Feature: Checkout Process with Specific Products
     When I add the first product "Sauce Labs Backpack" to the cart
     And I add the last product "Test.allTheThings() T-Shirt (Red)" to the cart
     And I proceed to checkout
-    And I fill checkout information with first name "Ana", last name "López", and postal code "11111"
+    And I fill the checkout information with:
+      | field       | value  |
+      | first_name  | Ana   |
+      | last_name   | López  |
+      | postal_code | 11111  |
     And I continue to checkout overview
     And I cancel the checkout process
     Then I should be redirected to the products page

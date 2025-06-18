@@ -7,6 +7,10 @@ Given('I am on the SauceDemo login page') do
   login_page.load
 end
 
+Given('I am logged in') do
+  step 'I click the login button'
+end
+
 When('I enter username {string}') do |username|
   login_page.fill_username(username)
 end

@@ -73,3 +73,47 @@ Then('the cart should contain {string}') do |product_name|
   expect(checkout_page.has_cart_product?(product_name)).to be true
   checkout_page.continue_shopping_if_possible
 end
+
+When('I fill the checkout information with:') do |table|
+  info = table.rows_hash
+  
+  first_name = info['first_name'] || ''
+  last_name = info['last_name'] || ''
+  postal_code = info['postal_code'] || ''
+  
+  checkout_page.fill_checkout_info(first_name, last_name, postal_code)
+end
+
+Then('the checkout summary should show the correct calculations:') do |table|
+  table.hashes.each do |row|
+    item_name = row['item']
+    expected_price = row['price']
+    expected_quantity = row['quantity']
+    
+    expect(checkout_page.has_cart_item?(item_name)).to be true
+    expect(page).to have_content(expected_price)
+    
+    cart_item = find('.cart_item', text: item_name)
+    within(cart_item) do
+      expect(page).to have_content(expected_quantity)
+    end
+  end
+end
+
+Then('the subtotal should be {string}') do |expected_subtotal|
+  expect(checkout_page.subtotal_label).to include(expected_subtotal)
+end
+
+Then('the tax rate should be {string}') do |expected_tax_rate|
+  expect(page).to have_content('Tax')
+end
+
+Then('the tax amount should be {string}') do |expected_tax_amount|
+  tax_text = find('.summary_tax_label').text
+  expect(tax_text).to include(expected_tax_amount)
+end
+
+Then('the total amount should be {string}') do |expected_total|
+  total_text = find('.summary_total_label').text
+  expect(total_text).to include(expected_total)
+end

@@ -26,3 +26,17 @@ end
 Then('the Facebook page title should contain {string}') do |title|
   expect(social_page.current_title).to include(title)
 end
+
+Then('the social media link should match:') do |table|
+  table.hashes.each do |row|
+    platform = row['platform']
+    expected_url = row['url']
+    expected_title = row['title']
+    
+    expect(social_page.current_url).to include(expected_url)
+    
+    if expected_title
+      expect(social_page.current_title).to include(expected_title)
+    end
+  end
+end

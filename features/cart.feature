@@ -5,10 +5,9 @@ Feature: Shopping Cart Functionality
 
   Background:
     Given I am on the SauceDemo login page
-    When I enter username "standard_user"
+    And I enter username "standard_user"
     And I enter password "secret_sauce"
-    And I click the login button
-    Then I should be redirected to the products page
+    And I am logged in
 
   @cart @smoke
   Scenario: Add first product to cart
